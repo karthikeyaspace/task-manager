@@ -4,6 +4,8 @@ import (
 	"api/internal/config"
 	"database/sql"
 	"log"
+
+	_ "github.com/lib/pq"
 )
 
 func Connect(cfg *config.Config) (*sql.DB, error) {
