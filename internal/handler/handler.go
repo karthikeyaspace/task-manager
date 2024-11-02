@@ -4,6 +4,7 @@ import (
 	"api/internal/model"
 	"api/internal/service"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 )
@@ -16,7 +17,7 @@ func NewTaskHandler(service service.TaskService) *taskHandler {
 	return &taskHandler{service: service}
 }
 
-func (th *taskHandler) GetAllTasks(w http.ResponseWriter, r *http.Request) {
+func (th *taskHandler) GetAllTasks(w http.ResponseWriter, _ *http.Request) {
 	tasks, err := th.service.GetAllTasks()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -24,7 +25,7 @@ func (th *taskHandler) GetAllTasks(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]any{"message": "Tasks fetched successfully", "tasks": tasks})
+	json.NewEncoder(w).Encode(map[string]any{"success": true, "tasks": tasks})
 }
 
 func (th *taskHandler) CreateTask(w http.ResponseWriter, r *http.Request) {
@@ -39,31 +40,8 @@ func (th *taskHandler) CreateTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(map[string]string{"message": "Task created successfully"})
-}
-
-func (th *taskHandler) GetTask(w http.ResponseWriter, r *http.Request) {
-	params := r.URL.Query()
-	id := params.Get("id")
-	if id == "" {
-		http.Error(w, "Task ID is required", http.StatusBadRequest)
-		return
-	}
-	tid, err := strconv.Atoi(id)
-	if err != nil {
-		http.Error(w, "Invalid task ID", http.StatusBadRequest)
-		return
-	}
-
-	task, err := th.service.GetTask(tid)
-	if err != nil {
-		http.Error(w, "Failed to fetch task", http.StatusInternalServerError)
-		return
-	}
-
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]any{"message": "Task fetched successfully", "task": task})
+	json.NewEncoder(w).Encode(map[string]any{"success": true})
 }
 
 func (th *taskHandler) UpdateTask(w http.ResponseWriter, r *http.Request) {
@@ -78,28 +56,24 @@ func (th *taskHandler) UpdateTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{"message": "Task updated successfully"})
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]any{"success": true})
 }
 
 func (th *taskHandler) DeleteTask(w http.ResponseWriter, r *http.Request) {
-	params := r.URL.Query()
-	id := params.Get("id")
-	if id == "" {
-		http.Error(w, "Task ID is required", http.StatusBadRequest)
-		return
-	}
-	tid, err := strconv.Atoi(id)
+	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil {
 		http.Error(w, "Invalid task ID", http.StatusBadRequest)
 		return
 	}
 
-	if err := th.service.DeleteTask(tid); err != nil {
-		http.Error(w, "Failed to delete task", http.StatusInternalServerError)
-		return
-	}
+	fmt.Println(id)
 
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{"message": "Task deleted successfully"})
+	// if err := th.service.DeleteTask(id); err != nil {
+	// 	http.Error(w, fmt.Sprintf("Failed to delete task with ID %d", id), http.StatusInternalServerError)
+	// 	return
+	// }
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]any{"success": true})
 }

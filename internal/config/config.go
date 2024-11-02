@@ -13,11 +13,11 @@ type Config struct {
 
 func NewConfig() *Config {
 	return &Config{
-		DBUser: "api",
-		DBPass: "api",
+		DBUser: "task",
+		DBPass: "task",
 		DBHost: "localhost",
 		DBPort: "5432",
-		DBName: "api",
+		DBName: "task",
 		Port:   ":8080",
 	}
 }

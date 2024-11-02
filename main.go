@@ -2,11 +2,12 @@ package main
 
 import (
 	"api/internal/config"
-	"api/internal/controller"
 	"api/internal/database"
+	"api/internal/handler"
 	"api/internal/middleware"
 	"api/internal/repository"
 	"api/internal/service"
+
 	"log"
 	"net/http"
 )
@@ -36,10 +37,9 @@ func (s *APIServer) Start() error {
 	router := http.NewServeMux()
 
 	router.HandleFunc("GET /tasks", taskHandler.GetAllTasks)
-	router.HandleFunc("POST /tasks", taskHandler.CreateTask)
-	router.HandleFunc("GET /task/{id}", taskHandler.GetTask)
-	router.HandleFunc("PUT /task/{id}", taskHandler.UpdateTask)
-	router.HandleFunc("DELETE /task/{id}", taskHandler.DeleteTask)
+	router.HandleFunc("POST /create-task", taskHandler.CreateTask)
+	router.HandleFunc("PUT /update-task", taskHandler.UpdateTask)
+	router.HandleFunc("DELETE /delete-task", taskHandler.DeleteTask)
 
 	middlewareChain := middleware.MiddlewareChain(middleware.Logger, middleware.AuthMiddleware)
 

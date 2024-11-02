@@ -8,7 +8,6 @@ import (
 type TaskRepo interface {
 	GetAllTasks() ([]model.Task, error)
 	CreateTask(task model.Task) error
-	GetTask(id int) (model.Task, error)
 	UpdateTask(task model.Task) error
 	DeleteTask(id int) error
 }
@@ -46,17 +45,6 @@ func (repo *taskRepo) CreateTask(task model.Task) error {
 		return err
 	}
 	return nil
-}
-
-func (repo *taskRepo) GetTask(id int) (model.Task, error) {
-	row, err := repo.db.Query("SELECT title, description, completed, priority from tasks WHERE id = $1", id)
-	if err != nil {
-		return model.Task{}, err
-	}
-	var task model.Task
-	row.Scan(&task.Title, &task.Description, &task.Completed, &task.Priority)
-	task.ID = id
-	return task, nil
 }
 
 func (repo *taskRepo) UpdateTask(task model.Task) error {
