@@ -9,7 +9,7 @@ type TaskRepo interface {
 	GetAllTasks() ([]model.Task, error)
 	CreateTask(task model.Task) error
 	UpdateTask(task model.Task) error
-	DeleteTask(id int) error
+	DeleteTask(taskid string) error
 }
 
 type taskRepo struct {
@@ -21,7 +21,7 @@ func NewTaskRepo(db *sql.DB) TaskRepo {
 }
 
 func (repo *taskRepo) GetAllTasks() ([]model.Task, error) {
-	rows, err := repo.db.Query("SELECT id, title, description, completed, priority FROM tasks")
+	rows, err := repo.db.Query("SELECT taskid, title, description, completed, priority FROM tasks")
 	if err != nil {
 		return nil, err
 	}
@@ -30,7 +30,7 @@ func (repo *taskRepo) GetAllTasks() ([]model.Task, error) {
 
 	for rows.Next() {
 		var task model.Task
-		err := rows.Scan(&task.ID, &task.Title, &task.Description, &task.Completed, &task.Priority)
+		err := rows.Scan(&task.TaskId, &task.Title, &task.Description, &task.Completed, &task.Priority)
 		if err != nil {
 			return nil, err
 		}
@@ -40,7 +40,7 @@ func (repo *taskRepo) GetAllTasks() ([]model.Task, error) {
 }
 
 func (repo *taskRepo) CreateTask(task model.Task) error {
-	_, err := repo.db.Exec("INSERT INTO tasks (title, description, completed, priority) VALUES ($1, $2, $3, $4)", task.Title, task.Description, task.Completed, task.Priority)
+	_, err := repo.db.Exec("INSERT INTO tasks (taskid, title, description, completed, priority) VALUES ($1, $2, $3, $4, $5)", task.TaskId, task.Title, task.Description, task.Completed, task.Priority)
 	if err != nil {
 		return err
 	}
@@ -48,15 +48,15 @@ func (repo *taskRepo) CreateTask(task model.Task) error {
 }
 
 func (repo *taskRepo) UpdateTask(task model.Task) error {
-	_, err := repo.db.Exec("UPDATE tasks SET title = $1, description = $2, completed = $3, priority = $4 WHERE id = $5", task.Title, task.Description, task.Completed, task.Priority, task.ID)
+	_, err := repo.db.Exec("UPDATE tasks SET title = $1, description = $2, completed = $3, priority = $4 WHERE taskid = $5", task.Title, task.Description, task.Completed, task.Priority, task.TaskId)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (repo *taskRepo) DeleteTask(id int) error {
-	_, err := repo.db.Exec("DELETE FROM tasks WHERE id = $1", id)
+func (repo *taskRepo) DeleteTask(taskid string) error {
+	_, err := repo.db.Exec("DELETE FROM tasks WHERE taskid = $1", taskid)
 	if err != nil {
 		return err
 	}

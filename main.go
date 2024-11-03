@@ -41,7 +41,7 @@ func (s *APIServer) Start() error {
 	router.HandleFunc("PUT /update-task", taskHandler.UpdateTask)
 	router.HandleFunc("DELETE /delete-task", taskHandler.DeleteTask)
 
-	middlewareChain := middleware.MiddlewareChain(middleware.Logger, middleware.AuthMiddleware)
+	middlewareChain := middleware.MiddlewareChain(middleware.Logger, middleware.AuthMiddleware, middleware.CORS)
 
 	server := &http.Server{
 		Addr:    s.addr,

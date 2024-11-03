@@ -36,6 +36,7 @@ func Disconnect(db *sql.DB) {
 func createInitialSchema(db *sql.DB) error {
 	_, err := db.Exec(`CREATE TABLE IF NOT EXISTS	 tasks (
 		id SERIAL PRIMARY KEY,
+		taskid TEXT NOT NULL,
 		title TEXT NOT NULL,
 		description TEXT NOT NULL,
 		priority INT NOT NULL,
